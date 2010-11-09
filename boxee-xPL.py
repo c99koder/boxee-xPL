@@ -72,7 +72,7 @@ def SendBroadcast(type, target, schema, body) :
 def ParseBroadcast(data):
 	parts = data.split("\n")
 	msgtype = parts[0].lower()
-	offset = 2;
+	offset = 2
 	values = dict()
 	if parts[offset-1] == "{":
 		while parts[offset] != "}":
@@ -105,13 +105,14 @@ def ParseBroadcast(data):
 		if schema == "media.basic":
 			print "Got media command:" + values['command']
 			if values['command'].lower() == "stop":
-				xbmc.Player().stop()
+				xbmc.executebuiltin('PlayerControl(Stop)')
 			if values['command'].lower() == "play":
-				xbmc.Player().play()
+				xbmc.executebuiltin('PlayerControl(Play)')
 			if values['command'].lower() == "pause":
-				xbmc.Player().pause()
+				if xbmc.Player().isPlaying():
+					xbmc.executebuiltin('PlayerControl(Play)')
 			if values['command'].lower() == "skip":
-				xbmc.Player().playnext()
+				xbmc.executebuiltin('PlayerControl(Next)')
 				
 		if schema == "media.request":
 			if values['request'].lower() == "devinfo":
@@ -145,7 +146,13 @@ def MonitorXbmc():
 	global lastState, lastAudioTag, lastVideoTag
 	
 	if xbmc.Player().isPlaying():
-		state = "play"
+		try:
+			if mc.Player().IsPaused():
+				state = "pause"
+			else:
+				state = "play"
+		except:
+			state = "play"
 		if xbmc.Player().isPlayingAudio():
 			tag = xbmc.Player().getMusicInfoTag();
 			if lastAudioTag is None or lastAudioTag.getTitle() != tag.getTitle() or lastAudioTag.getArtist() != tag.getArtist() or lastAudioTag.getAlbum() != tag.getAlbum():
