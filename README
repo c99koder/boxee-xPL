@@ -1,0 +1,22 @@
+About
+=====
+Boxee-xPL is a script that allows Boxee or XBMC to interface with home automation software such as misterhouse over the xPL protocol.
+Current supported commands are play, stop, skip, and pause.  Media information is broadcast whenever a new song or video starts.
+
+Installation
+============
+Copy boxee-xPL.py into your XBMC scripts folder:
+
+Boxee on linux: ~/.boxee/UserData/scripts
+Boxee on Mac OS X: ~/Library/Application Support/BOXEE/UserData/scripts
+
+Create a new file named "autoexec.py" in the scripts folder, and paste in the following two lines:
+
+import xbmc
+xbmc.executescript('special://masterprofile/scripts/boxee-xPL.py')
+
+Usage
+=====
+Boxee will register itself on the network and respond to requests according to the MEDIA.BASIC schema.
+A sample script is included for connecting Boxee to misterhouse. Copy the files in the misterhouse/ folder
+into your misterhouse code/ folder, and edit boxee.pl to set the hostname of the computer running Boxee.
