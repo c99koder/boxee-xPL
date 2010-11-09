@@ -27,7 +27,11 @@ $v_what_playing = new Voice_Cmd('[What track is,What song is,Show track,Show son
 
 if (said $v_what_playing) {
 	if($boxee->state() eq "play") {
-		$v_what_playing->respond("app=boxee " . $boxee->title() . " by " . $boxee->artist());
+		if($boxee->kind() eq "audio" and length($boxee->artist()) > 0) {
+			$v_what_playing->respond("app=boxee " . $boxee->title() . " by " . $boxee->artist());
+		} else {
+			$v_what_playing->respond("app=boxee " . $boxee->title());
+		}
 	} else {
 		$v_what_playing->respond("app=boxee Nothing is currently playing.");
 	}
