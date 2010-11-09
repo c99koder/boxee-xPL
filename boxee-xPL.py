@@ -52,10 +52,7 @@ port = 3865
 def HeartBeat():
 	global port
 	
-	for ip in gethostbyname_ex(getfqdn())[2]:
-		if not (ip.startswith("127.") or ip.startswith("169.")):
-			break
-	SendBroadcast("xpl-stat", "*","hbeat.app", "interval=1\nport=" + str(port) + "\nremote-ip=" + ip)
+	SendBroadcast("xpl-stat", "*","hbeat.app", "interval=1\nport=" + str(port) + "\nremote-ip=" + xbmc.getIPAddress())
 	heartbeat_timer = threading.Timer(60, HeartBeat)
 	heartbeat_timer.start()
 
