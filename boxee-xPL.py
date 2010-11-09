@@ -38,7 +38,7 @@
 # exception statement from your version.
 #
 ################################################################################
-import sys, string, select, threading
+import sys, string, select, threading, os.path
 import xbmc
 from socket import *
 
@@ -132,9 +132,22 @@ def ParseBroadcast(data):
 				if xbmc.Player().isPlaying():
 					if xbmc.Player().isPlayingAudio():
 						tag = xbmc.Player().getMusicInfoTag();
-						media = media + "title=" + tag.getTitle() + "\n";
-						media = media + "album=" + tag.getAlbum() + "\n";
-						media = media + "artist=" + tag.getArtist() + "\n";
+						media = "mp=boxee\n"
+						media = media + "kind=audio\n"
+						media = media + "title=" + tag.getTitle() + "\n"
+						media = media + "album=" + tag.getAlbum() + "\n"
+						media = media + "artist=" + tag.getArtist() + "\n"
+						media = media + "duration=" + str(xbmc.Player().getTotalTime()) + "\n"
+						media = media + "format=" + os.path.splitext(xbmc.Player().getPlayingFile())[1][1:] + "\n"
+					else:
+						tag = xbmc.Player().getVideoInfoTag();
+						media = "mp=boxee\n"
+						media = media + "kind=video\n"
+						media = media + "title=" + tag.getTitle() + "\n"
+						media = media + "album=" + "\n"
+						media = media + "artist=" + "\n"
+						media = media + "duration=" + str(xbmc.Player().getTotalTime()) + "\n"
+						media = media + "format=" + os.path.splitext(xbmc.Player().getPlayingFile())[1][1:] + "\n"
 						
 				SendBroadcast("xpl-stat", values['source'],"media.mpmedia", media)
 
@@ -157,18 +170,24 @@ def MonitorXbmc():
 			tag = xbmc.Player().getMusicInfoTag();
 			if lastAudioTag is None or lastAudioTag.getTitle() != tag.getTitle() or lastAudioTag.getArtist() != tag.getArtist() or lastAudioTag.getAlbum() != tag.getAlbum():
 				media = "mp=boxee\n"
+				media = media + "kind=audio\n"
 				media = media + "title=" + tag.getTitle() + "\n"
 				media = media + "album=" + tag.getAlbum() + "\n"
 				media = media + "artist=" + tag.getArtist() + "\n"
+				media = media + "duration=" + str(xbmc.Player().getTotalTime()) + "\n"
+				media = media + "format=" + os.path.splitext(xbmc.Player().getPlayingFile())[1][1:] + "\n"
 				SendBroadcast("xpl-trig", "*","media.mpmedia", media)
 				lastAudioTag = tag
 		else:
 			tag = xbmc.Player().getVideoInfoTag();
 			if lastVideoTag is None or lastVideoTag.getTitle() != tag.getTitle():
 				media = "mp=boxee\n"
+				media = media + "kind=video\n"
 				media = media + "title=" + tag.getTitle() + "\n"
 				media = media + "album=" + "\n"
 				media = media + "artist=" + "\n"
+				media = media + "duration=" + str(xbmc.Player().getTotalTime()) + "\n"
+				media = media + "format=" + os.path.splitext(xbmc.Player().getPlayingFile())[1][1:] + "\n"
 				SendBroadcast("xpl-trig", "*","media.mpmedia", media)
 				lastVideoTag = tag
 
@@ -213,6 +232,8 @@ try:
 	  if len(readable) == 1 :
 	    data,addr = UDPSock.recvfrom(buff)
 	    ParseBroadcast(data)
+	
+	  xbmc.sleep(3000)
 except (KeyboardInterrupt, SystemExit):
 	print "Shutting down xPL listener"
 	SendBroadcast("xpl-stat", "*","hbeat.end", "")

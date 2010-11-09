@@ -47,6 +47,21 @@ sub album {
 	return $$self{'media.mpmedia'}{album};
 }
 
+sub duration {
+    my ($self) = @_;
+	return $$self{'media.mpmedia'}{duration};
+}
+
+sub format {
+    my ($self) = @_;
+	return $$self{'media.mpmedia'}{format};
+}
+
+sub kind {
+    my ($self) = @_;
+	return $$self{'media.mpmedia'}{kind};
+}
+
 # Craft a message to request the state and media of all media devices
 sub request_all_stat {
    	&xPL::sendXpl('*', 'cmnd', 'media.request' => { 'request' => 'mptrnspt' });
