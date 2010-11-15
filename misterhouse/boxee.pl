@@ -12,9 +12,17 @@ set $sb_status_req_timer 10;      # noloop
 
 $boxee->manage_heartbeat_timeout(360, "speak 'Boxee is offline'", 1); # noloop
 
-if ($state = state_now $boxee){
-	print_log "+++ State event on boxee, state is " . $state;
+$boxee->tie_event('boxee_change_hook($boxee)');
+
+sub boxee_change_hook {
 	# You can put fancy state events in here, such as dimming the lights when the state changes to "play"
+	my ($boxee) = @_;
+	
+	if(state_changed $boxee) {
+		print_log "+++ State event on boxee, state is " . $boxee->state;
+	} elsif($boxee->state eq 'play' and defined $boxee->title() and defined $boxee->artist()) {
+		speak("app=boxee " . $boxee->title() . " by " . $boxee->artist());
+	}
 }
    
 if (expired $sb_status_req_timer) {
